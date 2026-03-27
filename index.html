@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beachvolley Soundboard</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #121a2b;
+      --panel-2: #18233a;
+      --text: #eef4ff;
+      --muted: #9fb1d1;
+      --accent: #4f8cff;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(79,140,255,.18), transparent 24%),
+        radial-gradient(circle at top left, rgba(34,197,94,.12), transparent 20%),
+        linear-gradient(180deg, #0b1220 0%, #0a1020 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .header {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1.2fr .9fr;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: rgba(18, 26, 43, .88);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
+      padding: 22px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.7rem, 2.8vw, 2.5rem);
+      line-height: 1.05;
+    }
+
+    .sub {
+      color: var(--muted);
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .top-controls {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      background: #223150;
+      color: var(--text);
+      cursor: pointer;
+      transition: transform .15s ease, opacity .15s ease, background .15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn.primary { background: var(--accent); }
+    .btn.success { background: var(--success); color: #052e12; font-weight: 700; }
+    .btn.danger { background: var(--danger); }
+    .btn.ghost { background: rgba(255,255,255,.06); }
+    .btn.small { padding: 9px 12px; border-radius: 12px; }
+
+    .status {
+      display: grid;
+      gap: 8px;
+      background: rgba(255,255,255,.04);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .status .label {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .status .track {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .volume-wrap {
+      display: grid;
+      gap: 6px;
+      min-width: 220px;
+      flex: 1;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.06);
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .chip.active {
+      background: rgba(79,140,255,.2);
+      border-color: rgba(79,140,255,.6);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .sound-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .sound-btn {
+      min-height: 120px;
+      border: 0;
+      border-radius: 20px;
+      padding: 14px;
+      color: white;
+      cursor: pointer;
+      text-align: left;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      transition: transform .15s ease, filter .15s ease, outline-color .15s ease;
+      outline: 2px solid transparent;
+    }
+
+    .sound-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    .sound-btn.playing { outline-color: rgba(255,255,255,.85); }
+    .sound-btn .name {
+      font-weight: 800;
+      font-size: 1rem;
+      line-height: 1.1;
+      margin-bottom: 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .sound-btn .meta {
+      font-size: .86rem;
+      opacity: .92;
+      display: grid;
+      gap: 4px;
+    }
+
+    .sound-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+        .sound-actions .btn {
+      background: rgba(0,0,0,.2);
+      padding: 8px 10px;
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: .92rem;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      border: 1px solid rgba(255,255,255,.08);
+      background: #0f1727;
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px 13px;
+      width: 100%;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .help {
+      font-size: .84rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .empty {
+      padding: 24px;
+      text-align: center;
+      border: 1px dashed rgba(255,255,255,.12);
+      border-radius: 18px;
+      color: var(--muted);
+    }
+
+    .hidden-player {
+      position: fixed;
+      left: -9999px;
+      top: -9999px;
+      width: 220px;
+      height: 220px;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: .88rem;
+      text-align: center;
+    }
+
+    @media (max-width: 920px) {
+      .header,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .app { padding: 12px; }
+      .hero, .top-controls, .panel { padding: 14px; }
+      .two-col { grid-template-columns: 1fr; }
+      .sound-grid { grid-template-columns: repeat(2, 1fr); }
+      .toolbar { align-items: stretch; }
+      .toolbar > * { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="appRoot">
+    <div class="header">
+      <section class="card hero">
+        <h1>Beachvolley Soundboard</h1>
+        <p class="sub">Snabb DJ-panel för turneringar. YouTube-musik, starttid i sekunder, stora knappar, mobilvänligt upplägg och redigeringsläge.</p>
+      </section>
+
+      <section class="card top-controls">
+        <div class="toolbar">
+          <button class="btn primary" id="toggleAdminBtn">Aktivera admin-läge</button>
+          <button class="btn ghost" id="pauseBtn">Pausa</button>
+          <button class="btn danger" id="stopBtn">Stoppa</button>
+        </div>
+
+        <div class="toolbar">
+          <div class="volume-wrap">
+            <label for="masterVolume">Mastervolym: <span id="volumeValue">100</span>%</label>
+            <input id="masterVolume" type="range" min="0" max="100" value="100" />
+          </div>
+        </div>
+
+        <div class="status">
+          <div class="label">Spelas nu</div>
+          <div class="track" id="nowPlaying">Inget spelar</div>
+          <div class="muted" id="nowPlayingMeta">Tryck på en knapp för att starta musik.</div>
+        </div>
+      </section>
+    </div>
+
+    <div class="filters" id="categoryFilters"></div>
+
+    <div class="layout">
+      <section class="card panel">
+        <div class="section-title">
+          <h2>Soundboard</h2>
+          <div class="muted">Ett ljud i taget · Videon är dold</div>
+        </div>
+        <div id="soundGrid" class="sound-grid"></div>
+      </section>
+
+      <aside class="card panel">
+        <div class="section-title">
+          <h2>Lägg till / redigera sound</h2>
+          <div class="muted">Du kan redigera även medan ett sound spelar</div>
+        </div>
+
+        <form id="soundForm">
+          <input type="hidden" id="editingId" />
+
+          <div class="field">
+            <label for="soundName">Namn på knapp</label>
+            <input id="soundName" type="text" placeholder="Ex. Finalintro" required />
+          </div>
+
+          <div class="field">
+            <label for="soundUrl">YouTube-URL</label>
+            <input id="soundUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." required />
+          </div>
+
+          <div class="two-col">
+            <div class="field">
+              <label for="startSeconds">Startsekund</label>
+              <input id="startSeconds" type="number" min="0" value="0" required />
+            </div>
+            <div class="field">
+              <label for="category">Kategori</label>
+              <select id="category" required>
+                <option>Matchstart</option>
+                <option>Time-out</option>
+                <option>Mellan matcher</option>
+                <option>Prisutdelning</option>
+                <option>Hype</option>
+                <option>Ljudeffekter</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="buttonColor">Knappfärg</label>
+            <input id="buttonColor" type="color" value="#4f8cff" />
+          </div>
+
+          <div class="toolbar">
+            <button class="btn success" type="submit" id="saveBtn">Spara sound</button>
+            <button class="btn ghost" type="button" id="resetFormBtn">Rensa</button>
+          </div>
+
+          <div class="help">
+            Tips: klistra in en vanlig YouTube-länk eller youtu.be-länk. Du kan lägga in hur många sounds du vill, och allt sparas lokalt i webbläsaren.
+          </div>
+        </form>
+      </aside>
+    </div>
+
+    <div class="footer-note">Tips för livebruk: öppna sidan innan turneringen och testa alla länkar i samma webbläsare/enhet som du ska använda på plats.</div>
+  </div>
+
+  <div id="ytPlayerHolder" class="hidden-player"></div>
+
+  <script>
+    const STORAGE_KEY = 'beachvolley_soundboard_v1';
+    const SETTINGS_KEY = 'beachvolley_soundboard_settings_v1';
+    const CATEGORIES = ['Alla', 'Matchstart', 'Time-out', 'Mellan matcher', 'Prisutdelning', 'Hype', 'Ljudeffekter'];
+
+    const defaultSounds = [
+      {
+        id: crypto.randomUUID(),
+        name: 'Matchstart Intro',
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        startSeconds: 42,
+        category: 'Matchstart',
+        color: '#2563eb'
+      },
+      {
+        id: crypto.randomUUID(),
+        name: 'Hype Drop',
+        url: 'https://www.youtube.com/watch?v=3GwjfUFyY6M',
+        startSeconds: 58,
+        category: 'Hype',
+        color: '#db2777'
+      },
+      {
+        id: crypto.randomUUID(),
+        name: 'Prisutdelning',
+        url: 'https://www.youtube.com/watch?v=fJ9rUzIMcZQ',
+        startSeconds: 0,
+        category: 'Prisutdelning',
+        color: '#16a34a'
+      }
+    ];
+
+    let sounds = loadSounds();
+    let settings = loadSettings();
+    let selectedCategory = 'Alla';
+    let adminMode = false;
+    let player;
+    let playerReady = false;
+    let currentSoundId = null;
+
+    const appRoot = document.getElementById('appRoot');
+    const soundGrid = document.getElementById('soundGrid');
+    const categoryFilters = document.getElementById('categoryFilters');
+    const toggleAdminBtn = document.getElementById('toggleAdminBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const nowPlaying = document.getElementById('nowPlaying');
+    const nowPlayingMeta = document.getElementById('nowPlayingMeta');
+    const masterVolume = document.getElementById('masterVolume');
+    const volumeValue = document.getElementById('volumeValue');
+
+    const soundForm = document.getElementById('soundForm');
+    const editingId = document.getElementById('editingId');
+    const soundName = document.getElementById('soundName');
+    const soundUrl = document.getElementById('soundUrl');
+    const startSeconds = document.getElementById('startSeconds');
+    const category = document.getElementById('category');
+    const buttonColor = document.getElementById('buttonColor');
+    const resetFormBtn = document.getElementById('resetFormBtn');
+
+    function loadSounds() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultSounds));
+          return [...defaultSounds];
+        }
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [...defaultSounds];
+      } catch {
+        return [...defaultSounds];
+      }
+    }
+
+    function saveSounds() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sounds));
+    }
+
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(SETTINGS_KEY);
+        if (!raw) return { volume: 100 };
+        return { volume: 100, ...JSON.parse(raw) };
+      } catch {
+        return { volume: 100 };
+      }
+    }
+
+    function saveSettings() {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    }
+
+    function extractVideoId(url) {
+      try {
+        const parsed = new URL(url);
+        const host = parsed.hostname.replace('www.', '');
+
+        if (host === 'youtu.be') {
+          return parsed.pathname.slice(1) || null;
+        }
+
+        if (host.includes('youtube.com')) {
+          if (parsed.searchParams.get('v')) return parsed.searchParams.get('v');
+          const parts = parsed.pathname.split('/').filter(Boolean);
+          const embedIndex = parts.indexOf('embed');
+          if (embedIndex !== -1 && parts[embedIndex + 1]) return parts[embedIndex + 1];
+          if (parts[0] === 'shorts' && parts[1]) return parts[1];
+        }
+      } catch {}
+      return null;
+    }
+
+    function renderFilters() {
+      categoryFilters.innerHTML = '';
+      CATEGORIES.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = `chip ${selectedCategory === cat ? 'active' : ''}`;
+        btn.textContent = cat;
+        btn.type = 'button';
+        btn.addEventListener('click', () => {
+          selectedCategory = cat;
+          renderFilters();
+          renderSounds();
+        });
+        categoryFilters.appendChild(btn);
+      });
+    }
+
+    function renderSounds() {
+      const filtered = sounds.filter(sound => selectedCategory === 'Alla' || sound.category === selectedCategory);
+      soundGrid.innerHTML = '';
+
+      if (!filtered.length) {
+        soundGrid.innerHTML = '<div class="empty">Inga sounds i den här kategorin än.</div>';
+        return;
+      }
+
+      filtered.forEach(sound => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = `sound-btn ${currentSoundId === sound.id ? 'playing' : ''}`;
+        card.style.background = `linear-gradient(180deg, ${sound.color}, ${shadeColor(sound.color, -22)})`;
+        card.innerHTML = `
+          <div class="name">${escapeHtml(sound.name)}</div>
+          <div class="meta">
+            <div>${escapeHtml(sound.category)}</div>
+            <div>Start: ${Number(sound.startSeconds) || 0}s</div>
+          </div>
+          <div class="sound-actions">
+            <button class="btn small" type="button" data-action="edit">Redigera</button>
+            <button class="btn small" type="button" data-action="delete">Ta bort</button>
+          </div>
+        `;
+
+        card.addEventListener('click', (event) => {
+          const action = event.target?.dataset?.action;
+          if (action === 'edit') {
+            event.stopPropagation();
+            fillForm(sound);
+            return;
+          }
+          if (action === 'delete') {
+            event.stopPropagation();
+            deleteSound(sound.id);
+            return;
+          }
+          playSound(sound.id);
+        });
+
+        soundGrid.appendChild(card);
+      });
+    }
+
+    function fillForm(sound) {
+      editingId.value = sound.id;
+      soundName.value = sound.name;
+      soundUrl.value = sound.url;
+      startSeconds.value = sound.startSeconds;
+      category.value = sound.category;
+      buttonColor.value = sound.color || '#4f8cff';
+      document.getElementById('saveBtn').textContent = 'Uppdatera sound';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      soundName.focus();
+    }
+
+    function resetForm() {
+      editingId.value = '';
+      soundForm.reset();
+      startSeconds.value = 0;
+      buttonColor.value = '#4f8cff';
+      category.value = 'Matchstart';
+      document.getElementById('saveBtn').textContent = 'Spara sound';
+    }
+
+    function deleteSound(id) {
+      if (!confirm('Ta bort detta sound?')) return;
+      if (currentSoundId === id) stopPlayback();
+      sounds = sounds.filter(sound => sound.id !== id);
+      saveSounds();
+      renderSounds();
+      if (wasCurrent) {
+        updateNowPlaying(payload);
+      }
+      resetForm();
+    }
+
+    function formatSourceMeta(sound) {
+      return `Kategori: ${sound.category} · Startar vid ${sound.startSeconds}s`;
+    }
+
+    function updateNowPlaying(sound = null) {
+      if (!sound) {
+        nowPlaying.textContent = 'Inget spelar';
+        nowPlayingMeta.textContent = 'Tryck på en knapp för att starta musik.';
+        return;
+      }
+      nowPlaying.textContent = sound.name;
+      nowPlayingMeta.textContent = formatSourceMeta(sound);
+    }
+
+    function playSound(id) {
+      const sound = sounds.find(item => item.id === id);
+      if (!sound) return;
+
+      const videoId = extractVideoId(sound.url);
+      if (!videoId) {
+        alert('Kunde inte läsa YouTube-länken. Kontrollera URL:en.');
+        return;
+      }
+
+      currentSoundId = sound.id;
+      updateNowPlaying(sound);
+      renderSounds();
+
+      if (!playerReady || !player) {
+        window.pendingPlay = { videoId, startSeconds: Number(sound.startSeconds) || 0 };
+        return;
+      }
+
+      player.stopVideo();
+      player.loadVideoById({
+        videoId,
+        startSeconds: Number(sound.startSeconds) || 0
+      });
+      player.setVolume(settings.volume);
+      player.playVideo();
+    }
+
+    function pausePlayback() {
+      if (!playerReady || !player) return;
+      player.pauseVideo();
+    }
+
+    function stopPlayback() {
+      if (playerReady && player) {
+        player.stopVideo();
+      }
+      currentSoundId = null;
+      updateNowPlaying(null);
+      renderSounds();
+    }
+
+    function setAdminMode(enabled) {
+      adminMode = enabled;
+      appRoot.classList.toggle('admin-on', adminMode);
+      toggleAdminBtn.textContent = adminMode ? 'Stäng admin-läge' : 'Aktivera admin-läge';
+      toggleAdminBtn.classList.toggle('primary', !adminMode);
+      toggleAdminBtn.classList.toggle('danger', adminMode);
+    }
+
+    function shadeColor(hex, percent) {
+      const clean = hex.replace('#', '');
+      const num = parseInt(clean, 16);
+      let r = (num >> 16) & 255;
+      let g = (num >> 8) & 255;
+      let b = num & 255;
+      r = Math.max(0, Math.min(255, r + Math.round((percent / 100) * 255)));
+      g = Math.max(0, Math.min(255, g + Math.round((percent / 100) * 255)));
+      b = Math.max(0, Math.min(255, b + Math.round((percent / 100) * 255)));
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    soundForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const videoId = extractVideoId(soundUrl.value.trim());
+      if (!videoId) {
+        alert('Ogiltig YouTube-URL.');
+        return;
+      }
+
+      const payload = {
+        id: editingId.value || crypto.randomUUID(),
+        name: soundName.value.trim(),
+        url: soundUrl.value.trim(),
+        startSeconds: Math.max(0, Number(startSeconds.value) || 0),
+        category: category.value,
+        color: buttonColor.value || '#4f8cff'
+      };
+
+      const existingIndex = sounds.findIndex(sound => sound.id === payload.id);
+      const wasCurrent = currentSoundId === payload.id;
+      if (existingIndex >= 0) {
+        sounds[existingIndex] = payload;
+      } else {
+        sounds.unshift(payload);
+      }
+
+      saveSounds();
+      renderSounds();
+      resetForm();
+    });
+
+    resetFormBtn.addEventListener('click', resetForm);
+    toggleAdminBtn.addEventListener('click', () => setAdminMode(!adminMode));
+    pauseBtn.addEventListener('click', pausePlayback);
+    stopBtn.addEventListener('click', stopPlayback);
+
+    masterVolume.value = settings.volume;
+    volumeValue.textContent = settings.volume;
+    masterVolume.addEventListener('input', () => {
+      settings.volume = Number(masterVolume.value);
+      volumeValue.textContent = settings.volume;
+      saveSettings();
+      if (playerReady && player) player.setVolume(settings.volume);
+    });
+
+    function loadYouTubeApi() {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(tag);
+    }
+
+    window.onYouTubeIframeAPIReady = function () {
+      player = new YT.Player('ytPlayerHolder', {
+        width: '220',
+        height: '220',
+        videoId: 'M7lc1UVf-VE',
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          disablekb: 1,
+          playsinline: 1,
+          rel: 0,
+          modestbranding: 1
+        },
+        events: {
+          onReady: () => {
+            playerReady = true;
+            player.setVolume(settings.volume);
+            if (window.pendingPlay) {
+              const { videoId, startSeconds } = window.pendingPlay;
+              player.loadVideoById({ videoId, startSeconds });
+              player.playVideo();
+              window.pendingPlay = null;
+            }
+          },
+          onStateChange: (event) => {
+            if (event.data === YT.PlayerState.ENDED) {
+              currentSoundId = null;
+              updateNowPlaying(null);
+              renderSounds();
+            }
+          }
+        }
+      });
+    };
+
+    renderFilters();
+    renderSounds();
+    updateNowPlaying(null);
+    setAdminMode(false);
+    loadYouTubeApi();
+  </script>
+</body>
+</html>
