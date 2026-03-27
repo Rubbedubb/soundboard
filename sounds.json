@@ -1,9 +1,44 @@
 [
   {
-    "id": "hype-1",
-    "name": "Monster Block",
+    "id": "airhorn-1",
+    "name": "Airhorn",
     "category": "Hype",
-    "color": "#001aff",
-    "filePath": "audio/monster-block.mp3"
+    "color": "#ef4444",
+    "filePath": "audio/air_horn.mp3"
+  },
+  {
+    "id": "buzzer-1",
+    "name": "Buzzer",
+    "category": "Time-out",
+    "color": "#f59e0b",
+    "filePath": "audio/buzzer.mp3"
+  },
+  {
+    "id": "drum-build-1",
+    "name": "Drum Build Up",
+    "category": "Hype",
+    "color": "#22c55e",
+    "filePath": "audio/drum_build_up.mp3"
+  },
+  {
+    "id": "mystisk-1",
+    "name": "Mystisk",
+    "category": "Mellan matcher",
+    "color": "#6366f1",
+    "filePath": "audio/mystisk.mp3"
+  },
+  {
+    "id": "snare-build-1",
+    "name": "Snare Build Up",
+    "category": "Hype",
+    "color": "#0ea5e9",
+    "filePath": "audio/snare_build_up.mp3"
+  },
+  {
+    "id": "sur-publik-1",
+    "name": "Sur publik",
+    "category": "Ljudeffekter",
+    "color": "#a855f7",
+    "filePath": "audio/sur_publik.mp3"
   }
 ]
