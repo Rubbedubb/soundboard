@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "name": "Matchstart Intro",
+    "url": "https://www.youtube.com/watch?v=abc123",
+    "startSeconds": 42,
+    "category": "Matchstart",
+    "color": "#2563eb"
+  },
+  {
+    "id": "2",
+    "name": "Hype Drop",
+    "url": "https://www.youtube.com/watch?v=xyz789",
+    "startSeconds": 58,
+    "category": "Hype",
+    "color": "#db2777"
+  }
+]
