@@ -1,18 +1,30 @@
 [
   {
-    "id": "1",
+    "id": "matchstart-1",
     "name": "Matchstart Intro",
-    "url": "https://www.youtube.com/watch?v=abc123",
-    "startSeconds": 42,
     "category": "Matchstart",
-    "color": "#2563eb"
+    "color": "#2563eb",
+    "filePath": "audio/matchstart-intro.mp3"
   },
   {
-    "id": "2",
-    "name": "Hype Drop",
-    "url": "https://www.youtube.com/watch?v=xyz789",
-    "startSeconds": 58,
+    "id": "hype-1",
+    "name": "Publik Hype",
     "category": "Hype",
-    "color": "#db2777"
+    "color": "#db2777",
+    "filePath": "audio/crowd-cheer.mp3"
+  },
+  {
+    "id": "timeout-1",
+    "name": "Visselpipa",
+    "category": "Time-out",
+    "color": "#f59e0b",
+    "filePath": "audio/whistle.wav"
+  },
+  {
+    "id": "award-1",
+    "name": "Prisutdelning Fanfare",
+    "category": "Prisutdelning",
+    "color": "#16a34a",
+    "filePath": "audio/award-fanfare.mp3"
   }
 ]
